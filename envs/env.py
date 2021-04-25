@@ -6,8 +6,51 @@ from gym.utils import seeding
 
 class QuadSwingUp(gym.Env):
     """
-    features and stuff of the environment goes here !
+    Description:
+        A pole is attached by a joint to a cart with a series of 3 more
+        attached to it with 3 other joints which moves along
+        a frictionless track. The pendulum starts at rest facing down, and the goal is to
+        make the thing go upright which is an angle 0 degree (starts at 180 degree from the goal)
+        and prevent it from falling over by increasing and reducing the cart's
+        velocity.
+
+    Observation:
+        Type: Box(4)
+        Num     Observation                 Min                     Max
+        0       Cart Position               -4.8                    4.8
+        1       Cart Velocity               -Inf                    Inf
+        2       Pole 1 Angle                -0.418 rad (-24 deg)    0.418 rad (24 deg)
+        3       Pole 1 Angular Velocity     -Inf                    Inf
+        2       Pole 2 Angle                -0.418 rad (-24 deg)    0.418 rad (24 deg)
+        4       Pole 2 Angular Velocity     -Inf                    Inf
+        5       Pole 3 Angle                -0.418 rad (-24 deg)    0.418 rad (24 deg)
+        7       Pole 3 Angular Velocity     -Inf                    Inf
+        8       Pole 4 Angle                -0.418 rad (-24 deg)    0.418 rad (24 deg)
+        9       Pole 4 Angular Velocity     -Inf                    Inf
+
+    Actions:
+        Type: Discrete(2)
+        Num   Action
+        0     Push cart to the left
+        1     Push cart to the right
+        Note: The amount the velocity that is reduced or increased is not
+        fixed; it depends on the angle the pole is pointing. This is because
+        the center of gravity of the pole increases the amount of energy needed
+        to move the cart underneath it
+    Reward:
+        Reward is 1 for every step taken between angle [0,12] including the termination step
+    Starting State:
+        All observations are assigned a uniform random value in [-0.05..0.05]
+    Episode Termination:
+        Pole angle is less than 12 degrees for more than 5 sec
+        Cart Position is more than 2.4 (center of the cart reaches the edge of
+        the display).
+        Episode length is greater than 200.
+        Solved Requirements:
+        Considered solved when the average return is greater than or equal to
+        195.0 over 100 consecutive trials.
     """
+
     metadata = {
             "render.modes": ["human", "rgb_array"],
             "video.frames_per_second": 50
