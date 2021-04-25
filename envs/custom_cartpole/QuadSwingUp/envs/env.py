@@ -59,23 +59,25 @@ class QuadSwingUp(gym.Env):
     def __init__(self):
         self.gravity = 9.8
         self.masscart = 1.0
-        self.masspole = .1
+        self.masspole = 0.1
         self.total_mass = (self.masspole + self.masscart)
-        self.legth = .5   #pole's half length
+        self.length = 0.5  # actually half the pole's length
         self.polemass_length = (self.masspole * self.length)
         self.force_mag = 10.0
-        self.tau = 0.02   #seconnd between state update
+        self.tau = 0.02  # seconds between state updates
         self.kinematics_integrator = 'euler'
 
         # Angle at which to fail the episode
         self.theta_threshold_radians = 12 * 2 * math.pi / 360
         self.x_threshold = 2.4
 
+        # Angle limit set to 2 * theta_threshold_radians so failing observation
+        # is still within bounds.
         high = np.array([self.x_threshold * 2,
-            np.finfo(np.float32).max,
-            self.theta_threshold_radians * 2,
-            np.finfo(np.float32).max],
-            dtype = np.float32)
+                         np.finfo(np.float32).max,
+                         self.theta_threshold_radians * 2,
+                         np.finfo(np.float32).max],
+                        dtype=np.float32)
 
         self.action_space = spaces.Discrete(2)
         self.observation_space = spaces.Box(-high, high, dtype=np.float32)
