@@ -64,7 +64,8 @@ class QuadSwingUp(gym.Env):
         self.masspole2 = 0.1
         self.masspole3 = 0.1
         self.masspole4 = 0.1
-        self.total_mass = (self.masspole1 + self.masspole2 + self.masspole3 + self.masspole4 + self.masscart)
+        self.massploe = self.masspole1 + self.masspole2 + self.masspole3 + self.masspole4 
+        self.total_mass = (self.masspole+ self.masscart)
         self.length = 0.5  # actually half the pole's length
         self.polemass_length = (self.masspole * self.length)
         self.force_mag = 10.0
@@ -189,8 +190,8 @@ class QuadSwingUp(gym.Env):
             pole3.set_color(.6, .4, .4)
             pole4.set_color(.5, .3, .4)
             self.poletrans = rendering.Transform(translation=(0, axleoffset))
-            pole.add_attr(self.poletrans)
-            pole.add_attr(self.carttrans)
+            pole1.add_attr(self.poletrans)
+            pole1.add_attr(self.carttrans)
             self.viewer.add_geom(pole)
             self.axle = rendering.make_circle(polewidth/2)
             self.axle.add_attr(self.poletrans)
