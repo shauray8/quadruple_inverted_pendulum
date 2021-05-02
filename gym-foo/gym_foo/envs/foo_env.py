@@ -166,8 +166,8 @@ class QuadSwingUp(gym.Env):
         return np.array(self.state)
 
     def render(self, mode='human'):
-        screen_width = 600
-        screen_height = 400
+        screen_width = 1000
+        screen_height = 600
 
         world_width = self.x_threshold * 2
         scale = screen_width/world_width
@@ -191,14 +191,23 @@ class QuadSwingUp(gym.Env):
             pole2 = rendering.FilledPolygon([(l, 2*b), (l, 2*t), (r, 2*t), (r, 2*b)])
             pole3 = rendering.FilledPolygon([(l, 3*b), (l, 3*t), (r, 3*t), (r, 3*b)])
             pole4 = rendering.FilledPolygon([(l, 4*b), (l, 4*t), (r, 4*t), (r, 4*b)])
-            pole1.set_color(.8, .6, .4)
-            pole2.set_color(.7, .5, .4)
-            pole3.set_color(.6, .4, .4)
-            pole4.set_color(.5, .3, .4)
+            pole1.set_color(.8, .6, .3)
+            pole2.set_color(.7, .5, .5)
+            pole3.set_color(.6, .4, .6)
+            pole4.set_color(.5, .3, .8)
             self.poletrans = rendering.Transform(translation=(0, axleoffset))
             pole1.add_attr(self.poletrans)
             pole1.add_attr(self.carttrans)
-            self.viewer.add_geom(pole)
+            pole2.add_attr(self.poletrans)
+            pole3.add_attr(self.poletrans)
+            pole4.add_attr(self.poletrans)
+            pole2.add_attr(self.carttrans)
+            pole3.add_attr(self.carttrans)
+            pole4.add_attr(self.carttrans)
+            self.viewer.add_geom(pole1)
+            self.viewer.add_geom(pole2)
+            self.viewer.add_geom(pole3)
+            self.viewer.add_geom(pole4)
             self.axle = rendering.make_circle(polewidth/2)
             self.axle.add_attr(self.poletrans)
             self.axle.add_attr(self.carttrans)
@@ -208,7 +217,7 @@ class QuadSwingUp(gym.Env):
             self.track.set_color(0, 0, 0)
             self.viewer.add_geom(self.track)
 
-            self._pole_geom = pole
+            self._pole_geom = pole1
 
         if self.state is None:
             return None
