@@ -60,8 +60,11 @@ class QuadSwingUp(gym.Env):
     def __init__(self):
         self.gravity = 9.8
         self.masscart = 1.0
-        self.masspole = 0.1
-        self.total_mass = (self.masspole + self.masscart)
+        self.masspole1 = 0.1
+        self.masspole2 = 0.1
+        self.masspole3 = 0.1
+        self.masspole4 = 0.1
+        self.total_mass = (self.masspole1 + self.masspole2 + self.masspole3 + self.masspole4 + self.masscart)
         self.length = 0.5  # actually half the pole's length
         self.polemass_length = (self.masspole * self.length)
         self.force_mag = 10.0
@@ -97,12 +100,13 @@ class QuadSwingUp(gym.Env):
         err_msg = "%r (%s) invalid" % (action, type(action))
         assert self.action_space.contains(action), err_msg
 
-        x, x_dot, theta, theta_dot = self.state
+        x, x_dot, theta1, theta1_dot, theta2, theta2_dot, theta3, theta3_dot, theta4, theta4_dot= self.state
 
         force = self.force_mag if action == 1 else -self.force_mag
         costheta = math.cos(theta)
         sintheta = math.sin(theta)
 
+        # equations to derive 
         temp = (force + self.polemass_length * theta_dot ** 2 * sintheta) / self.total_mass
         thetaacc = (self.gravity * sintheta - costheta * temp) / (self.length  *(4.0 / 3.0 - self.masspole * costheta ** 2 / self.total_mass))
         xacc = temp - self.polemass_length * thetaacc * costheta / self.total_mass  
@@ -176,8 +180,14 @@ class QuadSwingUp(gym.Env):
             cart.add_attr(self.carttrans)
             self.viewer.add_geom(cart)
             l, r, t, b = -polewidth / 2, polewidth / 2, polelen - polewidth / 2, -polewidth / 2
-            pole = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
-            pole.set_color(.8, .6, .4)
+            pole1 = rendering.FilledPolygon([(l, b), (l, t), (r, t), (r, b)])
+            pole2 = rendering.FilledPolygon([(l, 2*b), (l, 2*t), (r, 2*t), (r, 2*b)])
+            pole3 = rendering.FilledPolygon([(l, 3*b), (l, 3*t), (r, 3*t), (r, 3*b)])
+            pole4 = rendering.FilledPolygon([(l, 4*b), (l, 4*t), (r, 4*t), (r, 4*b)])
+            pole1.set_color(.8, .6, .4)
+            pole2.set_color(.7, .5, .4)
+            pole3.set_color(.6, .4, .4)
+            pole4.set_color(.5, .3, .4)
             self.poletrans = rendering.Transform(translation=(0, axleoffset))
             pole.add_attr(self.poletrans)
             pole.add_attr(self.carttrans)
@@ -199,7 +209,7 @@ class QuadSwingUp(gym.Env):
         # Edit the pole polygon vertex
         pole = self._pole_geom
         l, r, t, b = -polewidth / 2, polewidth / 2, polelen - polewidth / 2, -polewidth / 2
-        pole.v = [(l, b), (l, t), (r, t), (r, b)]
+        pole1.v = [(l, b), (l, t), (r, t), (r, b)]
 
         x = self.state
         cartx = x[0] * scale + screen_width / 2.0  # MIDDLE OF CART
