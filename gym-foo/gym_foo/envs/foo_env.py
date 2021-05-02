@@ -64,7 +64,7 @@ class QuadSwingUp(gym.Env):
         self.masspole2 = 0.1
         self.masspole3 = 0.1
         self.masspole4 = 0.1
-        self.massploe = self.masspole1 + self.masspole2 + self.masspole3 + self.masspole4 
+        self.masspole = self.masspole1 + self.masspole2 + self.masspole3 + self.masspole4 
         self.total_mass = (self.masspole+ self.masscart)
         self.length = 0.5  # actually half the pole's length
         self.polemass_length = (self.masspole * self.length)
@@ -104,33 +104,39 @@ class QuadSwingUp(gym.Env):
         x, x_dot, theta1, theta1_dot, theta2, theta2_dot, theta3, theta3_dot, theta4, theta4_dot= self.state
 
         force = self.force_mag if action == 1 else -self.force_mag
-        costheta = math.cos(theta)
-        sintheta = math.sin(theta)
+        costheta = math.cos(theta1)
+        sintheta = math.sin(theta1)
 
         # equations to derive 
-        temp = (force + self.polemass_length * theta_dot ** 2 * sintheta) / self.total_mass
+        temp = (force + self.polemass_length * theta1_dot ** 2 * sintheta) / self.total_mass
         thetaacc = (self.gravity * sintheta - costheta * temp) / (self.length  *(4.0 / 3.0 - self.masspole * costheta ** 2 / self.total_mass))
         xacc = temp - self.polemass_length * thetaacc * costheta / self.total_mass  
 
         if self.kinematics_integrator == "euler":
             x = x + self.tau * x_dot
             x_dot = x_dot + self.tau * xacc
-            theta = theta + self.tau * theta_dot
-            theta_dot = theta_dot + self.tau * thetaacc
+            theta1 = theta1 + self.tau * theta1_dot
+            theta2 = theta2 + self.tau * theta2_dot
+            theta3 = theta3 + self.tau * theta3_dot
+            theta4 = theta4 + self.tau * theta4_dot
+            theta1_dot = theta1_dot + self.tau * thetaacc
+            theta2_dot = theta2_dot + self.tau * thetaacc
+            theta3_dot = theta3_dot + self.tau * thetaacc
+            theta4_dot = theta4_dot + self.tau * thetaacc
 
         else:  
             x_dot = x_dot + self.tau * xacc
             x = x + self.tau * x_dot
-            theta_dot = theta_dot + self.tau * thetaacc
-            theta = theta + self.tau * theta_dot
+            theta1_dot = theta1_dot + self.tau * thetaacc
+            theta1 = theta1 + self.tau * theta_dot
 
-        self.state = (x, x_dot, theta, theta_dot)
+        self.state = (x, x_dot, theta1, theta1_dot, theta2, theta2_dot, theta3, theta3_dot, theta4, theta4_dot)
     
         done = bool(
             x < - self.x_threshold
             or x > self.x_threshold
-            or theta < - self.theta_threshold_radians
-            or theta > self.theta_threshold_radians
+            or theta1 < - self.theta_threshold_radians
+            or theta1 > self.theta_threshold_radians
             )
 
         if not done:
@@ -155,7 +161,7 @@ class QuadSwingUp(gym.Env):
         return np.array(self.state), reward, done, {}    
 
     def reset(self):
-        self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
+        self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(10,))
         self.steps_beyond_done = None
         return np.array(self.state)
 
